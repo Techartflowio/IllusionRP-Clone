@@ -213,13 +213,13 @@ Recommended to install [Chris.Gameplay](https://github.com/AkiKurisu/Chris.Gamep
 
 Documents are generated with [Devin AI](https://app.devin.ai/), please create an issue if you find any problems.
 
-[Shaders](./Documentation~/Shaders)
+[Shaders](./Documentation~/Shaders.md)
 
-[Lighting](./Documentation~/Lighting)
+[Lighting](./Documentation~/Lighting.md)
 
-[Render Pipeline](./Documentation~/RenderPipeline)
+[Render Pipeline](./Documentation~/RenderPipeline.md)
 
-[Optimization](./Documentation~/Optimization)
+[Optimization](./Documentation~/Optimization.md)
 
 # Contribution
 
