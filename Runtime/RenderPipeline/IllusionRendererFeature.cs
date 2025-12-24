@@ -376,7 +376,8 @@ namespace Illusion.Rendering
             // ========================================= Post Processing ============================================================ //
 
             bool usePrecomputedRadianceTransfer = config.EnablePrecomputedRadianceTransferGlobalIllumination
-                                                  && precomputedRadianceTransferGI && !isPreviewCamera;
+                                                  && precomputedRadianceTransferGI 
+                                                  && !isPreviewCamera;
             bool hasValidVolume = PRTVolumeManager.ProbeVolume && PRTVolumeManager.ProbeVolume.IsActivate();
             _rendererData.SampleProbeVolumes = usePrecomputedRadianceTransfer && hasValidVolume;
 
@@ -468,10 +469,7 @@ namespace Illusion.Rendering
                 }
             }
 
-            if (usePrecomputedRadianceTransfer)
-            {
-                renderer.EnqueuePass(_prtRelightPass);
-            }
+            renderer.EnqueuePass(_prtRelightPass);
 
             // AfterRenderingGBuffer
             renderer.EnqueuePass(_screenSpaceShadowsPass);

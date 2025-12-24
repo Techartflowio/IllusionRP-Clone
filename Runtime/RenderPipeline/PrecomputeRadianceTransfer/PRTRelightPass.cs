@@ -36,15 +36,15 @@ namespace Illusion.Rendering.PRTGI
         private readonly ProfilingSampler _relightProbeSampler = new("Relight Probe");
 
         private static int[] _coefficientClearValue;
-        
+
         private struct ReflectionProbeData
         {
             public Vector4 L0L1;
-            
+
             public Vector4 L2_1; // First 4 coeffs of L2 {-2, -1, 0, 1}
-            
+
             public float L2_2;   // Last L2 coeff {2}
-            
+
             // Whether the probe is normalized by probe volume content.
             public int normalizeWithProbeVolume;
 
@@ -52,7 +52,7 @@ namespace Illusion.Rendering.PRTGI
         }
 
         private readonly ReflectionProbeData[] _reflectionProbeData;
-        
+
         private ComputeBuffer _reflectionProbeComputeBuffer;
 
         private readonly IllusionRendererData _rendererData;
@@ -71,7 +71,7 @@ namespace Illusion.Rendering.PRTGI
 
             _reflectionProbeData = new ReflectionProbeData[UniversalRenderPipeline.maxVisibleReflectionProbes];
             _reflectionProbeComputeBuffer = new ComputeBuffer(_reflectionProbeData.Length, 48);
-            
+
             _coefficientClearValue = new int[27];
             for (int i = 0; i < 27; i++)
             {
@@ -91,7 +91,7 @@ namespace Illusion.Rendering.PRTGI
                 DoReflectionNormalization(cmd, ref renderingData);
 
                 PRTProbeVolume volume = PRTVolumeManager.ProbeVolume;
-                bool enableRelight = volume && volume.IsActivate();
+                bool enableRelight =  _rendererData.SampleProbeVolumes;
                 enableRelight &= _rendererData.IsLightingActive;
 
                 if (enableRelight)
@@ -129,7 +129,7 @@ namespace Illusion.Rendering.PRTGI
                     _reflectionProbeData[i].normalizeWithProbeVolume = 0;
                     continue;
                 }
-                
+
                 _reflectionProbeData[i].L0L1 = outL0L1;
                 _reflectionProbeData[i].L2_1 = outL21;
                 _reflectionProbeData[i].L2_2 = outL22;
@@ -137,7 +137,7 @@ namespace Illusion.Rendering.PRTGI
             }
             _reflectionProbeComputeBuffer.SetData(_reflectionProbeData);
             cmd.SetGlobalBuffer(ShaderProperties._reflectionProbeNormalizationData, _reflectionProbeComputeBuffer);
-            
+
             // Set reflection normalization parameters
             var reflectionNormalization = VolumeManager.instance.stack.GetComponent<ReflectionNormalization>();
             if (reflectionNormalization != null && reflectionNormalization.IsActive())
@@ -202,6 +202,9 @@ namespace Illusion.Rendering.PRTGI
             {
                 CoreUtils.SetKeyword(cmd, ShaderKeywords._RELIGHT_DEBUG_RADIANCE, false);
             }
+
+            // Set shadow keyword
+            CoreUtils.SetKeyword(cmd, ShaderKeywords._PRT_RELIGHT_SHADOW, volume.enableRelightShadow);
 
             // Relight Bricks
             using (new ProfilingScope(cmd, _relightBrickSampler))
@@ -375,6 +378,8 @@ namespace Illusion.Rendering.PRTGI
         private static class ShaderKeywords
         {
             public static readonly string _RELIGHT_DEBUG_RADIANCE = MemberNameHelpers.String();
+
+            public static readonly string _PRT_RELIGHT_SHADOW = MemberNameHelpers.String();
         }
 
         private static class ShaderProperties
@@ -419,7 +424,7 @@ namespace Illusion.Rendering.PRTGI
 
             // Reflection normalization parameters
             public static readonly int _reflectionProbeNormalizationFactor = MemberNameHelpers.ShaderPropertyID();
-            
+
             public static readonly int _reflectionProbeNormalizationData = MemberNameHelpers.ShaderPropertyID();
         }
     }
