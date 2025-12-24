@@ -7,8 +7,7 @@
 #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE
 #pragma multi_compile _ _ADDITIONAL_LIGHTS
 #pragma multi_compile _ _ADDITIONAL_LIGHT_SHADOWS
-
-// #define _DEBUG_SHADOW_OFF 1 // Debug for comparing shadow on off
+#pragma multi_compile _ _PRT_RELIGHT_SHADOW
 
 //--------------------------------------------------------------------------------------------------
 // Included headers
@@ -44,13 +43,12 @@ float3 EvaluateSurfelRadiance(Surfel surfel, uint surfelGlobalIndex)
     Light mainLight = GetMainLight();
     
     float atten = 1.0;
-#ifndef _DEBUG_SHADOW_OFF
+#if defined(_PRT_RELIGHT_SHADOW)
     // mainlight shadow
     float4 shadowCoord = TransformWorldToShadowCoord(surfel.position);
     if (!BEYOND_SHADOW_FAR(shadowCoord))
     {
-        // Shadow is valid, sample and update cache
-        atten = VolumetricSampleShadowmap(
+        float currentShadow = VolumetricSampleShadowmap(
             TEXTURE2D_ARGS(_MainLightShadowmapTexture, sampler_MainLightShadowmapTexture), 
             shadowCoord, 
             GetMainLightShadowSamplingData(), 
@@ -58,8 +56,19 @@ float3 EvaluateSurfelRadiance(Surfel surfel, uint surfelGlobalIndex)
             false
         );
         
-        // Update shadow cache with new valid result
-        _shadowCache[surfelGlobalIndex] = atten;
+        // Blend history
+        float cachedShadow = _shadowCache[surfelGlobalIndex];
+        float shadowDiff = abs(currentShadow - cachedShadow);
+        if (shadowDiff > 0.1 || cachedShadow == 1.0)
+        {
+            const float blendFactor = 0.3;
+            atten = lerp(cachedShadow, currentShadow, blendFactor);
+            _shadowCache[surfelGlobalIndex] = atten;
+        }
+        else
+        {
+            atten = cachedShadow;
+        }
     }
     else
     {
@@ -82,7 +91,7 @@ float3 EvaluateSurfelRadiance(Surfel surfel, uint surfelGlobalIndex)
     uint pixelLightCount = GetAdditionalLightsCount();
     LIGHT_LOOP_BEGIN(pixelLightCount)
         Light light = GetAdditionalLight(lightIndex, surfel.position);
-    #ifdef _DEBUG_SHADOW_OFF
+    #if !defined(_PRT_RELIGHT_SHADOW)
         light.shadowAttenuation = 1.0f;
     #else
         light.shadowAttenuation = VolumetricAdditionalLightRealtimeShadow(lightIndex, surfel.position, light.direction);

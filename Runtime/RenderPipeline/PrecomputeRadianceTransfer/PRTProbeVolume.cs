@@ -99,6 +99,11 @@ namespace Illusion.Rendering.PRTGI
         public bool multiFrameRelight;
 
         /// <summary>
+        /// Enable shadow calculation in PRT relight
+        /// </summary>
+        public bool enableRelightShadow = true;
+
+        /// <summary>
         /// Number of probes to update per frame
         /// </summary>
         [Range(1, 100)]

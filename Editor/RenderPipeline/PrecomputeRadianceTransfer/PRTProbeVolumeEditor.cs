@@ -23,6 +23,7 @@ namespace Illusion.Rendering.Editor
 
         // Relight Settings
         private SerializedProperty _multiFrameRelight;
+        private SerializedProperty _enableRelightShadow;
         private SerializedProperty _probesPerFrameUpdate;
         private SerializedProperty _localProbeCount;
 
@@ -55,6 +56,7 @@ namespace Illusion.Rendering.Editor
 
             // Relight Settings
             _multiFrameRelight = Properties.Find(volume => volume.multiFrameRelight);
+            _enableRelightShadow = Properties.Find(volume => volume.enableRelightShadow);
             _probesPerFrameUpdate = Properties.Find(volume => volume.probesPerFrameUpdate);
             _localProbeCount = Properties.Find(volume => volume.localProbeCount);
 
@@ -146,6 +148,8 @@ namespace Illusion.Rendering.Editor
                     EditorGUILayout.PropertyField(_probesPerFrameUpdate, Styles.ProbesPerFrameUpdateLabel);
                     EditorGUILayout.PropertyField(_localProbeCount, Styles.LocalProbeCountLabel);
                 }
+
+                EditorGUILayout.PropertyField(_enableRelightShadow, Styles.EnableRelightShadowLabel);
             }
 
             EditorGUILayout.Space();
@@ -322,6 +326,7 @@ namespace Illusion.Rendering.Editor
 
             // Relight Settings
             public static readonly GUIContent MultiFrameRelightLabel = new("Multi Frame Relight", "Enable multi frame relight to improve performance");
+            public static readonly GUIContent EnableRelightShadowLabel = new("Enable Relight Shadow", "Enable shadow calculation in PRT relight. Disable this to avoid shadow flickering when camera moves");
             public static readonly GUIContent ProbesPerFrameUpdateLabel = new("Probes Per Frame Update", "Number of probes to update per frame");
             public static readonly GUIContent LocalProbeCountLabel = new("Local Probe Count", "Number of camera nearby probes to relight in additional to per frame update roulette");
 
