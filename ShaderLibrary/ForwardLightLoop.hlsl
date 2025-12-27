@@ -73,7 +73,7 @@ half3 EvaluateIndirectDiffuse(float3 positionWS, float3 normalWS, float2 normali
     bool replaceBakeDiffuseLighting = false; 
     half3 indirectDiffuse = 0;
     
-#if (SURFACE_TYPE_RECEIVE_SSGI && _SCREEN_SPACE_GLOBAL_ILLUMINATION)
+#if (SURFACE_TYPE_RECEIVE_SSGI && _SCREEN_SPACE_GLOBAL_ILLUMINATION && !defined(LIGHTMAP_ON) && !defined(DYNAMICLIGHTMAP_ON))
     if (_IndirectDiffuseMode != INDIRECTDIFFUSEMODE_OFF)
     {
         indirectDiffuse = SampleScreenSpaceGlobalIllumination(normalizedScreenSpaceUV).rgb;

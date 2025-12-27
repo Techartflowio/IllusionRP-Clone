@@ -170,7 +170,9 @@ Include <b>Screen Space Global Illumination</b> based on [jiaozi158/UnitySSGIURP
 ![SSGI](./Documentation~/images/ssgi.png)
 
 > [!TIP]
-> Recommend to use `PRTGI` outdoor and combine with `SSGI` indoor.
+> Recommend to use `PRTGI` outdoor and combine with `SSGI` indoor. 
+> 
+> Also, `SSGI` will not affect materials that use baked lightmaps.
 
 ![SSGI + PRTGI](./Documentation~/images/gi_combine.png)
 

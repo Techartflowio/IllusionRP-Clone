@@ -154,8 +154,6 @@ namespace Illusion.Rendering.PRTGI
 
         private int _lastRoundRobinProbeCount;
 
-        private uint _frameCount;
-
         private Camera _mainCamera;
 
         private readonly List<int> _localProbeIndices = new();
@@ -505,7 +503,7 @@ namespace Illusion.Rendering.PRTGI
 
         private bool EnableMultiFrameRelight()
         {
-            return multiFrameRelight && _frameCount > 5;
+            return multiFrameRelight;
         }
 
         public Vector3 GetVoxelMinCorner()
@@ -705,8 +703,6 @@ namespace Illusion.Rendering.PRTGI
             {
                 _currentProbeUpdateIndex = 0;
             }
-
-            _frameCount++;
         }
 
         /// <summary>
@@ -715,7 +711,6 @@ namespace Illusion.Rendering.PRTGI
         private void ResetProbeUpdateRotation()
         {
             _originalBoxMin = new Vector3Int(-1, -1, -1);
-            _frameCount = 0;
             _currentProbeUpdateIndex = 0;
             _lastRoundRobinProbeCount = 0;
             _probesToUpdateCount = Probes != null ? CalculateProbesPerFrameUpdate(_probesInBoundingBox.Count, probesPerFrameUpdate) : 0;
