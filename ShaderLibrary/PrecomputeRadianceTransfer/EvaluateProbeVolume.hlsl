@@ -79,7 +79,7 @@ real3 EvaluateProbeVolumeSH(
         int3(1, 0, 0), int3(1, 0, 1), int3(1, 1, 0), int3(1, 1, 1), 
     };
 
-    real3 c[9];
+    float3 c[9];
     real3 Lo[8] = {
         real3(0, 0, 0),
         real3(0, 0, 0),
